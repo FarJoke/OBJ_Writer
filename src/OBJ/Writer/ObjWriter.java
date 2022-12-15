@@ -2,8 +2,11 @@ package OBJ.Writer;
 
 import com.company.Model;
 import com.company.Polygon;
+import com.company.Vector2f;
+import com.company.Vector3f;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class ObjWriter {
 
@@ -16,10 +19,10 @@ public class ObjWriter {
     public static void writeToFile(Model model, File file) throws IOException {
         String str = "";
 
-        str += writeVertexes(model);
-        str += writeTextureVertexes(model);
-        str += writeNormals(model);
-        str += writePolygons(model);
+        str += writeVertexes(model.vertices);
+        str += writeTextureVertexes(model.textureVertices);
+        str += writeNormals(model.normals);
+        str += writePolygons(model.polygons);
 
         toFile(str, file.getAbsolutePath());
     }
@@ -30,52 +33,52 @@ public class ObjWriter {
         printWriter.close();
     }
 
-    protected static String writeVertexes(final Model model){
+    protected static String writeVertexes(final ArrayList<Vector3f> v){
         String str = "";
-        for (int i = 0; i < model.vertices.size(); i++){
-            final String vx = String.format("%.4f", model.vertices.get(i).x).replace(',', '.');
-            final String vy = String.format("%.4f", model.vertices.get(i).y).replace(',', '.');
-            final String vz = String.format("%.4f", model.vertices.get(i).z).replace(',', '.');
+        for (int i = 0; i < v.size(); i++){
+            final String vx = String.format("%.4f", v.get(i).x).replace(',', '.');
+            final String vy = String.format("%.4f", v.get(i).y).replace(',', '.');
+            final String vz = String.format("%.4f", v.get(i).z).replace(',', '.');
             str = str + "v  " + vx + " " + vy + " " + vz + "\n";
         }
-        str = str + "# " + model.vertices.size() + " vertices";
+        str = str + "# " + v.size() + " vertices";
         str+="\n";
         str+="\n";
         return str;
     }
 
-    protected static String writeTextureVertexes(final Model model){
+    protected static String writeTextureVertexes(final ArrayList<Vector2f> vt){
         String str = "";
-        for (int i = 0; i < model.textureVertices.size(); i++){
-            final String vtx = String.format("%.4f", model.textureVertices.get(i).x).replace(',', '.');
-            final String vty = String.format("%.4f", model.textureVertices.get(i).y).replace(',', '.');
+        for (int i = 0; i < vt.size(); i++){
+            final String vtx = String.format("%.4f", vt.get(i).x).replace(',', '.');
+            final String vty = String.format("%.4f", vt.get(i).y).replace(',', '.');
             str = str + "vt " + vtx + " " + vty + " " + "0.0000" + "\n";
         }
-        str = str + "# " + model.textureVertices.size() + " texture coords";
+        str = str + "# " + vt.size() + " texture coords";
         str+="\n";
         str+="\n";
         return str;
     }
 
-    protected static String writeNormals(final Model model){
+    protected static String writeNormals(final ArrayList<Vector3f> vn){
         String str = "";
-        for (int i = 0; i < model.normals.size(); i++){
-            final String vx = String.format("%.4f", model.normals.get(i).x).replace(',', '.');
-            final String vy = String.format("%.4f", model.normals.get(i).y).replace(',', '.');
-            final String vz = String.format("%.4f", model.normals.get(i).z).replace(',', '.');
+        for (int i = 0; i < vn.size(); i++){
+            final String vx = String.format("%.4f", vn.get(i).x).replace(',', '.');
+            final String vy = String.format("%.4f", vn.get(i).y).replace(',', '.');
+            final String vz = String.format("%.4f", vn.get(i).z).replace(',', '.');
             str = str + "vn  " + vx + " " + vy + " " + vz + "\n";
         }
-        str = str + "# " + model.normals.size() + " normals";
+        str = str + "# " + vn.size() + " normals";
         str+="\n";
         str+="\n";
         return str;
     }
 
-    protected static String writePolygons(final Model model){
+    protected static String writePolygons(final ArrayList<Polygon> p){
         String str = "";
-        for (int i = 0; i < model.polygons.size(); i++){
+        for (int i = 0; i < p.size(); i++){
             str = str + "f ";
-            final Polygon pol = model.polygons.get(i);
+            final Polygon pol = p.get(i);
             for (int j = 0; j < pol.getVertexIndices().size(); j++){
                 if (!pol.getTextureVertexIndices().isEmpty() && pol.getNormalIndices().isEmpty()){
                     str = str  + (pol.getVertexIndices().get(j) + 1) + "/"
@@ -96,7 +99,7 @@ public class ObjWriter {
             }
             str = str  + "\n";
         }
-        str = str + "# " + model.polygons.size() + " polygons";
+        str = str + "# " + p.size() + " polygons";
         str+="\n";
         str+="\n";
         return str;
